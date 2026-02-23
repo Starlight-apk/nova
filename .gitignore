@@ -1,0 +1,43 @@
+# NovaScript ignore file
+
+# Build artifacts
+build/
+dist/
+*.nbc
+__nova_cache__/
+
+# Dependencies
+packages/
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Test coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Encrypted files (optional - uncomment if needed)
+# *.enc.nova
+# *.enc

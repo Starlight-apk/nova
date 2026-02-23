@@ -1,0 +1,225 @@
+#===============================================================================
+# NovaScript 标准库 - OS 模块
+#===============================================================================
+
+# 获取操作系统类型
+os_type() {
+    echo "$NOVA_OS"
+}
+
+# 获取架构
+os_arch() {
+    echo "$NOVA_ARCH"
+}
+
+# 是否 Termux
+os_is_termux() {
+    echo "$NOVA_IS_TERMUX"
+}
+
+# 是否 ARM64
+os_is_arm64() {
+    echo "$NOVA_IS_ARM64"
+}
+
+# 获取主机名
+os_hostname() {
+    hostname 2>/dev/null || echo "unknown"
+}
+
+# 获取用户名
+os_username() {
+    echo "${USER:-${LOGNAME:-$(whoami)}}"
+}
+
+# 获取家目录
+os_home() {
+    echo "$HOME"
+}
+
+# 获取临时目录
+os_temp_dir() {
+    echo "${TMPDIR:-/tmp}"
+}
+
+# 获取当前时间戳
+os_timestamp() {
+    nova_builtin_time
+}
+
+# 获取格式化日期时间
+os_datetime() {
+    local format="${1:-%Y-%m-%d %H:%M:%S}"
+    nova_builtin_date "$format"
+}
+
+# 获取环境变量
+os_getenv() {
+    local name="$1"
+    echo "${!name:-}"
+}
+
+# 设置环境变量
+os_set_env() {
+    local name="$1"
+    local value="$2"
+    export "$name"="$value"
+}
+
+# 获取所有环境变量
+os_env_list() {
+    env
+}
+
+# 执行系统命令
+os_system() {
+    local cmd="$1"
+    exec_output "$cmd"
+}
+
+# 检查命令是否存在
+os_command_exists() {
+    local cmd="$1"
+    command -v "$cmd" &>/dev/null && echo "true" || echo "false"
+}
+
+# 获取进程 ID
+os_pid() {
+    echo $$
+}
+
+# 获取父进程 ID
+os_ppid() {
+    echo $PPID
+}
+
+# 获取工作目录
+os_pwd() {
+    command pwd
+}
+
+# 切换目录
+os_chdir() {
+    local path="$1"
+    cd "$path" || nova_throw "Cannot change directory: $path"
+}
+
+# 创建目录
+os_mkdir_p() {
+    local path="$1"
+    mkdir -p "$path"
+}
+
+# 删除目录
+os_rmdir_p() {
+    local path="$1"
+    rm -rf "$path"
+}
+
+# 检查文件权限
+os_is_readable() {
+    local path="$1"
+    [[ -r "$path" ]] && echo "true" || echo "false"
+}
+
+os_is_writable() {
+    local path="$1"
+    [[ -w "$path" ]] && echo "true" || echo "false"
+}
+
+os_is_executable() {
+    local path="$1"
+    [[ -x "$path" ]] && echo "true" || echo "false"
+}
+
+# 设置文件权限
+os_chmod_file() {
+    local path="$1"
+    local mode="$2"
+    chmod "$mode" "$path"
+}
+
+# 获取路径分隔符
+os_path_separator() {
+    if [[ "$NOVA_OS" == "windows" ]]; then
+        echo "\\"
+    else
+        echo "/"
+    fi
+}
+
+# 连接路径
+os_path_join() {
+    local result=""
+    local sep=$(os_path_separator)
+    for part in "$@"; do
+        if [[ -z "$result" ]]; then
+            result="$part"
+        elif [[ "$part" == /* ]]; then
+            result+="$part"
+        else
+            result+="$sep$part"
+        fi
+    done
+    echo "$result"
+}
+
+# 获取目录名
+os_dirname() {
+    command dirname "$1"
+}
+
+# 获取文件名
+os_basename() {
+    command basename "$1"
+}
+
+# 获取文件扩展名
+os_extension() {
+    local path="$1"
+    local base=$(basename "$path")
+    echo "${base##*.}"
+}
+
+# 检查是否为绝对路径
+os_is_absolute() {
+    local path="$1"
+    if [[ "$NOVA_OS" == "windows" ]]; then
+        [[ "$path" =~ ^[A-Za-z]: ]] && echo "true" || echo "false"
+    else
+        [[ "$path" == /* ]] && echo "true" || echo "false"
+    fi
+}
+
+# 导出所有函数
+export -f os_type
+export -f os_arch
+export -f os_is_termux
+export -f os_is_arm64
+export -f os_hostname
+export -f os_username
+export -f os_home
+export -f os_temp_dir
+export -f os_timestamp
+export -f os_datetime
+export -f os_getenv
+export -f os_set_env
+export -f os_env_list
+export -f os_system
+export -f os_command_exists
+export -f os_pid
+export -f os_ppid
+export -f os_pwd
+export -f os_chdir
+export -f os_mkdir_p
+export -f os_rmdir_p
+export -f os_is_readable
+export -f os_is_writable
+export -f os_is_executable
+export -f os_chmod_file
+export -f os_path_separator
+export -f os_path_join
+export -f os_dirname
+export -f os_basename
+export -f os_extension
+export -f os_is_absolute

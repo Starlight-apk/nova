@@ -1,0 +1,135 @@
+#===============================================================================
+# NovaScript 标准库 - 字符串模块
+#===============================================================================
+
+# 字符串长度
+string_len() {
+    nova_builtin_len "$1"
+}
+
+# 子字符串
+string_substr() {
+    local str="$1"
+    local start="$2"
+    local length="${3:--1}"
+    if [[ $length -eq -1 ]]; then
+        nova_builtin_substr "$str" "$start"
+    else
+        nova_builtin_substr "$str" "$start" "$length"
+    fi
+}
+
+# 分割字符串
+string_split() {
+    local str="$1"
+    local delim="${2:- }"
+    nova_builtin_split "$str" "$delim"
+}
+
+# 连接字符串
+string_join() {
+    local delim="$1"
+    shift
+    nova_builtin_join "$delim" "$@"
+}
+
+# 转大写
+string_upper() {
+    nova_builtin_upper "$1"
+}
+
+# 转小写
+string_lower() {
+    nova_builtin_lower "$1"
+}
+
+# 去除空白
+string_trim() {
+    nova_builtin_trim "$1"
+}
+
+# 替换
+string_replace() {
+    local str="$1"
+    local old="$2"
+    local new="$3"
+    nova_builtin_replace "$str" "$old" "$new"
+}
+
+# 包含检查
+string_contains() {
+    local str="$1"
+    local substr="$2"
+    nova_builtin_contains "$str" "$substr"
+}
+
+# startswith
+string_startswith() {
+    local str="$1"
+    local prefix="$2"
+    [[ "$str" == "$prefix"* ]] && echo "true" || echo "false"
+}
+
+# endswith
+string_endswith() {
+    local str="$1"
+    local suffix="$2"
+    [[ "$str" == *"$suffix" ]] && echo "true" || echo "false"
+}
+
+# 查找子串位置
+string_index() {
+    local str="$1"
+    local substr="$2"
+    local temp="${str%%$substr*}"
+    if [[ "$temp" == "$str" ]]; then
+        echo "-1"
+    else
+        echo "${#temp}"
+    fi
+}
+
+# 反转字符串
+string_reverse() {
+    echo "$1" | rev
+}
+
+# 重复字符串
+string_repeat() {
+    local str="$1"
+    local times="$2"
+    local result=""
+    for ((i=0; i<times; i++)); do
+        result+="$str"
+    done
+    echo "$result"
+}
+
+# 格式化字符串
+string_format() {
+    local template="$1"
+    shift
+    local args=("$@")
+    local result="$template"
+    for arg in "${args[@]}"; do
+        result="${result/\{\}/$arg}"
+    done
+    echo "$result"
+}
+
+# 导出所有函数
+export -f string_len
+export -f string_substr
+export -f string_split
+export -f string_join
+export -f string_upper
+export -f string_lower
+export -f string_trim
+export -f string_replace
+export -f string_contains
+export -f string_startswith
+export -f string_endswith
+export -f string_index
+export -f string_reverse
+export -f string_repeat
+export -f string_format

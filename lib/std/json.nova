@@ -1,0 +1,142 @@
+#===============================================================================
+# NovaScript 标准库 - JSON 模块
+#===============================================================================
+
+# 解析 JSON（简化版）
+json_parse() {
+    local json_str="$1"
+    json_str=$(echo "$json_str" | tr -d '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    
+    if [[ "$json_str" =~ ^\{ ]]; then
+        local content="${json_str:1:${#json_str}-2}"
+        echo "$content"
+    else
+        echo "$json_str"
+    fi
+}
+
+# 生成 JSON 对象
+json_object() {
+    local result="{"
+    local first=true
+    
+    for pair in "$@"; do
+        if [[ "$first" == true ]]; then
+            first=false
+        else
+            result+=","
+        fi
+        local key="${pair%%=*}"
+        local value="${pair#*=}"
+        result+="\"$key\":\"$value\""
+    done
+    
+    result+="}"
+    echo "$result"
+}
+
+# 生成 JSON 数组
+json_array() {
+    local result="["
+    local first=true
+    
+    for item in "$@"; do
+        if [[ "$first" == true ]]; then
+            first=false
+        else
+            result+=","
+        fi
+        result+="\"$item\""
+    done
+    
+    result+="]"
+    echo "$result"
+}
+
+# 获取 JSON 值
+json_get() {
+    local json_str="$1"
+    local key="$2"
+    echo "$json_str" | grep -o "\"$key\"[[:space:]]*:[[:space:]]*\"[^\"]*\"" | sed "s/\"$key\"[[:space:]]*:[[:space:]]*\"//" | sed 's/"$//'
+}
+
+# JSON 转义
+json_escape() {
+    local str="$1"
+    str="${str//\\/\\\\}"
+    str="${str//\"/\\\"}"
+    str="${str//$'\n'/\\n}"
+    str="${str//$'\r'/\\r}"
+    str="${str//$'\t'/\\t}"
+    echo "$str"
+}
+
+# JSON 格式化
+json_pretty() {
+    local json_str="$1"
+    local indent=0
+    local result=""
+    local in_string=false
+    
+    for ((i=0; i<${#json_str}; i++)); do
+        local char="${json_str:$i:1}"
+        
+        if [[ "$char" == '"' ]] && [[ "${json_str:$((i-1)):1}" != "\\" ]]; then
+            in_string=!$in_string
+        fi
+        
+        if [[ "$in_string" == false ]]; then
+            case "$char" in
+                '{'|'[')
+                    result+="$char"$'\n'
+                    ((indent++))
+                    for ((j=0; j<indent; j++)); do result+="  "; done
+                    ;;
+                '}'|']')
+                    result+=$'\n'
+                    ((indent--))
+                    for ((j=0; j<indent; j++)); do result+="  "; done
+                    result+="$char"
+                    ;;
+                ',')
+                    result+="$char"$'\n'
+                    for ((j=0; j<indent; j++)); do result+="  "; done
+                    ;;
+                ':')
+                    result+=": "
+                    ;;
+                *)
+                    result+="$char"
+                    ;;
+            esac
+        else
+            result+="$char"
+        fi
+    done
+    
+    echo "$result"
+}
+
+# 验证 JSON
+json_validate() {
+    local json_str="$1"
+    local open_braces="${json_str//[^\{]/}"
+    local close_braces="${json_str//[^\}]/}"
+    local open_brackets="${json_str//[^\[]/}"
+    local close_brackets="${json_str//[^\]]/}"
+    
+    if [[ ${#open_braces} -eq ${#close_braces} ]] && [[ ${#open_brackets} -eq ${#close_brackets} ]]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
+# 导出所有函数
+export -f json_parse
+export -f json_object
+export -f json_array
+export -f json_get
+export -f json_escape
+export -f json_pretty
+export -f json_validate

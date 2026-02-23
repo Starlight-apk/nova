@@ -1,0 +1,159 @@
+#===============================================================================
+# NovaScript 标准库 - IO 模块
+#===============================================================================
+
+# 打印输出
+io_print() {
+    nova_builtin_print "$@"
+}
+
+# 打印到标准错误
+io_println() {
+    nova_builtin_print "$@"
+}
+
+# 读取输入
+io_input() {
+    local prompt="${1:-}"
+    nova_builtin_input "$prompt" "INPUT_RESULT"
+    echo "$INPUT_RESULT"
+}
+
+# 读取文件
+io_read_file() {
+    local path="$1"
+    if [[ -f "$path" ]]; then
+        cat "$path"
+    else
+        nova_throw "File not found: $path"
+    fi
+}
+
+# 写入文件
+io_write_file() {
+    local path="$1"
+    local content="$2"
+    echo "$content" > "$path"
+}
+
+# 追加到文件
+io_append_file() {
+    local path="$1"
+    local content="$2"
+    echo "$content" >> "$path"
+}
+
+# 文件存在检查
+io_file_exists() {
+    local path="$1"
+    [[ -f "$path" ]] && echo "true" || echo "false"
+}
+
+# 目录存在检查
+io_dir_exists() {
+    local path="$1"
+    [[ -d "$path" ]] && echo "true" || echo "false"
+}
+
+# 创建目录
+io_mkdir() {
+    local path="$1"
+    mkdir -p "$path"
+}
+
+# 删除文件
+io_remove() {
+    local path="$1"
+    rm -f "$path"
+}
+
+# 复制文件
+io_copy() {
+    local src="$1"
+    local dest="$2"
+    cp "$src" "$dest"
+}
+
+# 移动文件
+io_move() {
+    local src="$1"
+    local dest="$2"
+    mv "$src" "$dest"
+}
+
+# 列出目录内容
+io_list_dir() {
+    local path="${1:-.}"
+    ls -1 "$path"
+}
+
+# 获取当前工作目录
+io_cwd() {
+    pwd
+}
+
+# 改变目录
+io_cd() {
+    local path="$1"
+    cd "$path" || nova_throw "Cannot change to directory: $path"
+}
+
+# 获取环境变量
+io_getenv() {
+    local name="$1"
+    echo "${!name:-}"
+}
+
+# 设置环境变量
+io_setenv() {
+    local name="$1"
+    local value="$2"
+    export "$name"="$value"
+}
+
+# 执行命令
+io_exec() {
+    local cmd="$1"
+    eval "$cmd"
+}
+
+# 执行命令并捕获输出
+io_exec_output() {
+    local cmd="$1"
+    eval "$cmd" 2>&1
+}
+
+# 退出
+io_exit() {
+    local code="${1:-0}"
+    nova_builtin_exit "$code"
+}
+
+# 休眠
+io_sleep() {
+    local seconds="$1"
+    sleep "$seconds"
+}
+
+# 导出所有函数
+export -f io_print
+export -f io_println
+export -f io_input
+export -f io_read_file
+export -f io_write_file
+export -f io_append_file
+export -f io_file_exists
+export -f io_dir_exists
+export -f io_mkdir
+export -f io_remove
+export -f io_copy
+export -f io_move
+export -f io_list_dir
+export -f io_cwd
+export -f io_cd
+export -f io_getenv
+export -f io_setenv
+export -f io_exec
+export -f io_exec_output
+export -f io_exit
+export -f io_sleep

@@ -1,0 +1,89 @@
+#!/bin/bash
+#===============================================================================
+# NovaScript 示例 - 计算器
+#===============================================================================
+
+import std.io
+import std.math
+
+func add(a, b) {
+    return math.add(a, b)
+}
+
+func subtract(a, b) {
+    return math.sub(a, b)
+}
+
+func multiply(a, b) {
+    return math.mul(a, b)
+}
+
+func divide(a, b) {
+    if b == 0 {
+        io.print("Error: Division by zero!")
+        return 0
+    }
+    return math.div(a, b)
+}
+
+func calculate(a, op, b) {
+    case "$op" in
+        +) add "$a" "$b" ;;
+        -) subtract "$a" "$b" ;;
+        \*) multiply "$a" "$b" ;;
+        /) divide "$a" "$b" ;;
+        %) math.mod "$a" "$b" ;;
+        ^) math.pow "$a" "$b" ;;
+        *) 
+            io.print("Error: Unknown operator '$op'")
+            return 1
+            ;;
+    esac
+}
+
+func main() {
+    io.print("========================================")
+    io.print("  NovaScript Calculator")
+    io.print("========================================")
+    io.print("")
+    io.print("Supported operators: + - * / % ^")
+    io.print("")
+    
+    # 示例计算
+    io.print("Example calculations:")
+    io.print("  10 + 5 = $(calculate 10 + 5)")
+    io.print("  20 - 8 = $(calculate 20 - 8)")
+    io.print("  6 * 7 = $(calculate 6 \*)")
+    io.print("  100 / 4 = $(calculate 100 / 4)")
+    io.print("  17 % 5 = $(calculate 17 % 5)")
+    io.print("  2 ^ 10 = $(calculate 2 ^ 10)")
+    io.print("")
+    
+    # 交互式计算
+    io.print("Interactive mode:")
+    io.print("Enter: <number1> <operator> <number2>")
+    io.print("Or 'q' to quit")
+    io.print("")
+    
+    while true; do
+        io.print("> ")
+        read -r input
+        
+        if [[ "$input" == "q" ]] || [[ "$input" == "quit" ]]; then
+            io.print("Goodbye!")
+            break
+        fi
+        
+        # 解析输入
+        read -r num1 op num2 <<< "$input"
+        
+        if [[ -z "$num1" ]] || [[ -z "$op" ]] || [[ -z "$num2" ]]; then
+            io.print("Invalid input. Format: <number1> <operator> <number2>")
+            continue
+        fi
+        
+        # 执行计算
+        local result=$(calculate "$num1" "$op" "$num2")
+        io.print("  Result: $result")
+    done
+}

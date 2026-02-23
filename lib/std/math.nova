@@ -1,0 +1,213 @@
+#===============================================================================
+# NovaScript 标准库 - 数学模块
+#===============================================================================
+
+# 加法
+math_add() {
+    echo $(($1 + $2))
+}
+
+# 减法
+math_sub() {
+    echo $(($1 - $2))
+}
+
+# 乘法
+math_mul() {
+    echo $(($1 * $2))
+}
+
+# 除法
+math_div() {
+    if [[ $2 -eq 0 ]]; then
+        nova_throw "Division by zero"
+    fi
+    echo $(($1 / $2))
+}
+
+# 取模
+math_mod() {
+    echo $(($1 % $2))
+}
+
+# 幂运算
+math_pow() {
+    local base="$1"
+    local exp="$2"
+    local result=1
+    for ((i=0; i<exp; i++)); do
+        result=$((result * base))
+    done
+    echo "$result"
+}
+
+# 平方根（整数）
+math_sqrt() {
+    local n="$1"
+    if [[ $n -lt 0 ]]; then
+        echo "NaN"
+        return
+    fi
+    local result=0
+    local bit=1
+    while [[ $bit -le $n ]]; do
+        bit=$((bit * 4))
+    done
+    while [[ $bit -gt 0 ]]; do
+        if [[ $((n >= result + bit)) -eq 1 ]]; then
+            n=$((n - result - bit))
+            result=$((result / 2 + bit))
+        else
+            result=$((result / 2))
+        fi
+        bit=$((bit / 4))
+    done
+    echo "$result"
+}
+
+# 绝对值
+math_abs() {
+    local n="$1"
+    if [[ $n -lt 0 ]]; then
+        echo $((-n))
+    else
+        echo "$n"
+    fi
+}
+
+# 最小值
+math_min() {
+    local a="$1"
+    local b="$2"
+    if [[ $a -lt $b ]]; then
+        echo "$a"
+    else
+        echo "$b"
+    fi
+}
+
+# 最大值
+math_max() {
+    local a="$1"
+    local b="$2"
+    if [[ $a -gt $b ]]; then
+        echo "$a"
+    else
+        echo "$b"
+    fi
+}
+
+# 随机数
+math_rand() {
+    local max="${1:-100}"
+    nova_builtin_rand "$max"
+}
+
+# 阶乘
+math_factorial() {
+    local n="$1"
+    if [[ $n -le 1 ]]; then
+        echo 1
+    else
+        echo $((n * $(math_factorial $((n-1)))))
+    fi
+}
+
+# 最大公约数
+math_gcd() {
+    local a="$1"
+    local b="$2"
+    a=${a#-}
+    b=${b#-}
+    while [[ $b -ne 0 ]]; do
+        local temp=$b
+        b=$((a % b))
+        a=$temp
+    done
+    echo "$a"
+}
+
+# 最小公倍数
+math_lcm() {
+    local a="$1"
+    local b="$2"
+    if [[ $a -eq 0 ]] || [[ $b -eq 0 ]]; then
+        echo 0
+    else
+        echo $(( (a * b) / $(math_gcd $a $b) ))
+    fi
+}
+
+# 是否为质数
+math_is_prime() {
+    local n="$1"
+    if [[ $n -lt 2 ]]; then
+        echo "false"
+        return
+    fi
+    if [[ $n -eq 2 ]]; then
+        echo "true"
+        return
+    fi
+    if [[ $((n % 2)) -eq 0 ]]; then
+        echo "false"
+        return
+    fi
+    local i=3
+    while [[ $((i * i)) -le $n ]]; do
+        if [[ $((n % i)) -eq 0 ]]; then
+            echo "false"
+            return
+        fi
+        i=$((i + 2))
+    done
+    echo "true"
+}
+
+# 斐波那契数列
+math_fibonacci() {
+    local n="$1"
+    if [[ $n -le 0 ]]; then
+        echo 0
+    elif [[ $n -eq 1 ]]; then
+        echo 1
+    else
+        local a=0 b=1
+        for ((i=2; i<=n; i++)); do
+            local temp=$((a + b))
+            a=$b
+            b=$temp
+        done
+        echo "$b"
+    fi
+}
+
+# 四舍五入
+math_round() {
+    local n="$1"
+    printf "%.0f" "$n"
+}
+
+# 常量
+MATH_PI="3.14159265359"
+MATH_E="2.71828182846"
+MATH_PHI="1.61803398875"
+
+# 导出所有函数
+export -f math_add
+export -f math_sub
+export -f math_mul
+export -f math_div
+export -f math_mod
+export -f math_pow
+export -f math_sqrt
+export -f math_abs
+export -f math_min
+export -f math_max
+export -f math_rand
+export -f math_factorial
+export -f math_gcd
+export -f math_lcm
+export -f math_is_prime
+export -f math_fibonacci
+export -f math_round

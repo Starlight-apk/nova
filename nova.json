@@ -1,0 +1,69 @@
+{
+    "name": "nova",
+    "version": "1.0.0",
+    "description": "NovaScript - High-performance scripting language built with Bash",
+    "main": "bin/nova",
+    "type": "language-runtime",
+    "bin": {
+        "nova": "bin/nova"
+    },
+    "scripts": {
+        "start": "bash bin/nova",
+        "test": "bash tools/test-framework.sh",
+        "build": "bash build.sh",
+        "clean": "bash build.sh clean",
+        "install": "bash build.sh install",
+        "dev": "bash build.sh dev",
+        "docs": "bash build.sh docs",
+        "release": "bash build.sh release"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/novascript/nova.git"
+    },
+    "keywords": [
+        "nova",
+        "novascript",
+        "bash",
+        "scripting",
+        "language",
+        "termux",
+        "arm64",
+        "shell"
+    ],
+    "author": "NovaScript Team",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/novascript/nova/issues"
+    },
+    "homepage": "https://novascript.dev",
+    "engines": {
+        "bash": ">=4.0"
+    },
+    "platforms": [
+        "linux",
+        "macos",
+        "windows",
+        "termux",
+        "android"
+    ],
+    "architectures": [
+        "x64",
+        "arm64",
+        "arm"
+    ],
+    "dependencies": {},
+    "devDependencies": {},
+    "files": [
+        "bin/",
+        "lib/",
+        "src/",
+        "tools/",
+        "docs/",
+        "examples/",
+        "build.sh",
+        "install-termux.sh",
+        "README.md",
+        "LICENSE"
+    ]
+}

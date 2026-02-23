@@ -1,0 +1,16 @@
+{
+    "name": "test-project",
+    "version": "1.0.0",
+    "description": "A NovaScript project",
+    "main": "src/main.nova",
+    "type": "application",
+    "dependencies": {},
+    "devDependencies": {},
+    "scripts": {
+        "start": "nova run src/main.nova",
+        "test": "nova test",
+        "build": "nova build"
+    },
+    "author": "",
+    "license": "MIT"
+}

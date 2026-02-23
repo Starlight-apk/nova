@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaScript Studio</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1"/>
+                                <stop offset="100%" style="stop-color:#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="40" height="40" rx="8" fill="url(#logoGradient)"/>
+                        <path d="M12 28V12h4l6 10V12h4v16h-4l-6-10v10h-4z" fill="white"/>
+                    </svg>
+                    <span class="logo-text">NovaScript</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">Workspace</span>
+                    <a href="#" class="nav-item active" data-view="dashboard">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="editor">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        <span>Code Editor</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="terminal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="4 17 10 11 4 5"/>
+                            <line x1="12" y1="19" x2="20" y2="19"/>
+                        </svg>
+                        <span>Terminal</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="files">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                        </svg>
+                        <span>File Manager</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <span class="nav-section-title">Tools</span>
+                    <a href="#" class="nav-item" data-view="packages">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                        <span>Packages</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="image-generator">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <span>Image Generator</span>
+                    </a>
+                    <a href="#" class="nav-item" data-view="projects">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                        </svg>
+                        <span>Projects</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <span class="nav-section-title">Settings</span>
+                    <a href="#" class="nav-item" data-view="settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                        </svg>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Online</span>
+                </div>
+                <div class="version-info">v1.0.0</div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部工具栏 -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-btn" id="menuBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <line x1="3" y1="18" x2="21" y2="18"/>
+                        </svg>
+                    </button>
+                    <div class="breadcrumb">
+                        <span class="breadcrumb-item">Home</span>
+                        <span class="breadcrumb-separator">/</span>
+                        <span class="breadcrumb-item current" id="currentView">Dashboard</span>
+                    </div>
+                </div>
+                <div class="top-bar-right">
+                    <button class="icon-btn" id="themeToggle" title="Toggle theme">
+                        <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"/>
+                            <line x1="12" y1="1" x2="12" y2="3"/>
+                            <line x1="12" y1="21" x2="12" y2="23"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                            <line x1="1" y1="12" x2="3" y2="12"/>
+                            <line x1="21" y1="12" x2="23" y2="12"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                        </svg>
+                        <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" id="notificationBtn" title="Notifications">
+                        <span class="badge">3</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                        </svg>
+                    </button>
+                    <div class="user-menu">
+                        <div class="avatar">
+                            <span>N</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 内容区域 -->
+            <div class="content-wrapper">
+                <!-- Dashboard View -->
+                <div class="view active" id="view-dashboard">
+                    <div class="view-header">
+                        <h1 class="view-title">Dashboard</h1>
+                        <p class="view-subtitle">Welcome back to NovaScript Studio</p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="projectCount">0</span>
+                                <span class="stat-label">Projects</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16 18 22 12 16 6"/>
+                                    <polyline points="8 6 2 12 8 18"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value">24</span>
+                                <span class="stat-label">Lines of Code</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon purple">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="packageCount">0</span>
+                                <span class="stat-label">Packages</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon orange">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="uptime">--</span>
+                                <span class="stat-label">Uptime</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-grid">
+                        <div class="card recent-files">
+                            <div class="card-header">
+                                <h3>Recent Files</h3>
+                                <button class="card-action">View All</button>
+                            </div>
+                            <div class="card-content">
+                                <div class="file-list" id="recentFiles">
+                                    <div class="file-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                            <polyline points="14 2 14 8 20 8"/>
+                                        </svg>
+                                        <span>main.nova</span>
+                                        <span class="file-meta">2 KB</span>
+                                    </div>
+                                    <div class="file-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                            <polyline points="14 2 14 8 20 8"/>
+                                        </svg>
+                                        <span>hello.nova</span>
+                                        <span class="file-meta">1 KB</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card quick-actions">
+                            <div class="card-header">
+                                <h3>Quick Actions</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="action-grid">
+                                    <button class="action-btn" onclick="createNewProject()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 5v14M5 12h14"/>
+                                        </svg>
+                                        <span>New Project</span>
+                                    </button>
+                                    <button class="action-btn" onclick="openFile()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                                        </svg>
+                                        <span>Open File</span>
+                                    </button>
+                                    <button class="action-btn" onclick="runScript()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polygon points="5 3 19 12 5 21 5 3"/>
+                                        </svg>
+                                        <span>Run Script</span>
+                                    </button>
+                                    <button class="action-btn" onclick="installPackage()">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                            <polyline points="17 8 12 3 7 8"/>
+                                            <line x1="12" y1="3" x2="12" y2="15"/>
+                                        </svg>
+                                        <span>Install Package</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card system-info">
+                        <div class="card-header">
+                            <h3>System Information</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-grid" id="systemInfo">
+                                <div class="info-item">
+                                    <span class="info-label">OS</span>
+                                    <span class="info-value" id="sysOs">--</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Architecture</span>
+                                    <span class="info-value" id="sysArch">--</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Hostname</span>
+                                    <span class="info-value" id="sysHostname">--</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Nova Version</span>
+                                    <span class="info-value">1.0.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Editor View -->
+                <div class="view" id="view-editor">
+                    <div class="editor-container">
+                        <div class="editor-sidebar">
+                            <div class="editor-tabs">
+                                <button class="tab-btn active">Untitled.nova</button>
+                            </div>
+                            <div class="file-tree">
+                                <div class="tree-header">
+                                    <span>Explorer</span>
+                                </div>
+                                <div class="tree-content" id="fileTree">
+                                    <!-- Files will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="editor-main">
+                            <div class="editor-toolbar">
+                                <button class="toolbar-btn" onclick="saveFile()" title="Save">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                </button>
+                                <button class="toolbar-btn" onclick="runCode()" title="Run">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3"/>
+                                    </svg>
+                                </button>
+                                <button class="toolbar-btn" onclick="formatCode()" title="Format">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="21" y1="10" x2="3" y2="10"/>
+                                        <line x1="21" y1="6" x2="3" y2="6"/>
+                                        <line x1="21" y1="14" x2="3" y2="14"/>
+                                        <line x1="21" y1="18" x2="3" y2="18"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <textarea class="code-editor" id="codeEditor" spellcheck="false"># Welcome to NovaScript Editor
+# Start coding here!
+
+import std.io
+import std.math
+
+func main() {
+    io.print("Hello, World!")
+}
+
+main()
+</textarea>
+                            <div class="editor-status">
+                                <span>Lines: <span id="lineCount">10</span></span>
+                                <span>Column: <span id="colCount">1</span></span>
+                                <span>NovaScript</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Terminal View -->
+                <div class="view" id="view-terminal">
+                    <div class="terminal-container">
+                        <div class="terminal-header">
+                            <span>NovaScript Terminal</span>
+                            <div class="terminal-controls">
+                                <button class="terminal-btn" onclick="clearTerminal()">Clear</button>
+                            </div>
+                        </div>
+                        <div class="terminal-body" id="terminal">
+                            <div class="terminal-line">
+                                <span class="prompt">nova@termux:~$</span>
+                                <span class="command">Welcome to NovaScript Terminal</span>
+                            </div>
+                        </div>
+                        <div class="terminal-input-area">
+                            <span class="prompt">nova@termux:~$</span>
+                            <input type="text" class="terminal-input" id="terminalInput" placeholder="Enter command..." autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Packages View -->
+                <div class="view" id="view-packages">
+                    <div class="view-header">
+                        <h1 class="view-title">Packages</h1>
+                        <p class="view-subtitle">Manage your NovaScript packages</p>
+                    </div>
+                    
+                    <div class="packages-toolbar">
+                        <input type="text" class="search-input" id="packageSearch" placeholder="Search packages...">
+                        <button class="btn btn-primary" onclick="installPackage()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Install Package
+                        </button>
+                    </div>
+                    
+                    <div class="packages-grid" id="packagesList">
+                        <!-- Packages will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Settings View -->
+                <div class="view" id="view-settings">
+                    <div class="view-header">
+                        <h1 class="view-title">Settings</h1>
+                        <p class="view-subtitle">Configure NovaScript Studio</p>
+                    </div>
+                    
+                    <div class="settings-container">
+                        <div class="settings-section">
+                            <h3>Appearance</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Theme</span>
+                                    <span class="setting-desc">Choose between light and dark theme</span>
+                                </div>
+                                <select class="setting-control" id="themeSelect">
+                                    <option value="system">System</option>
+                                    <option value="light">Light</option>
+                                    <option value="dark" selected>Dark</option>
+                                </select>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Font Size</span>
+                                    <span class="setting-desc">Editor font size in pixels</span>
+                                </div>
+                                <input type="number" class="setting-control" value="14" min="10" max="24">
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h3>Editor</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Auto Save</span>
+                                    <span class="setting-desc">Automatically save files after delay</span>
+                                </div>
+                                <label class="toggle">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Line Numbers</span>
+                                    <span class="setting-desc">Show line numbers in editor</span>
+                                </div>
+                                <label class="toggle">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-section">
+                            <h3>Server</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Port</span>
+                                    <span class="setting-desc">WebUI server port</span>
+                                </div>
+                                <input type="number" class="setting-control" value="8080" min="1024" max="65535">
+                            </div>
+                        </div>
+                        
+                        <div class="settings-actions">
+                            <button class="btn btn-primary">Save Changes</button>
+                            <button class="btn btn-secondary">Reset to Defaults</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Generator View -->
+                <div class="view" id="view-image-generator">
+                    <div class="view-header">
+                        <h1 class="view-title">Image Generator</h1>
+                        <p class="view-subtitle">Create and manipulate images with NovaScript</p>
+                    </div>
+                    
+                    <div class="generator-container">
+                        <div class="generator-panel">
+                            <h3>Create New Image</h3>
+                            <div class="form-group">
+                                <label>Width</label>
+                                <input type="number" class="form-control" value="800" id="imgWidth">
+                            </div>
+                            <div class="form-group">
+                                <label>Height</label>
+                                <input type="number" class="form-control" value="600" id="imgHeight">
+                            </div>
+                            <div class="form-group">
+                                <label>Background Color</label>
+                                <input type="color" class="form-control color" value="#6366f1" id="bgColor">
+                            </div>
+                            <button class="btn btn-primary" onclick="createImage()">Create Image</button>
+                        </div>
+                        
+                        <div class="generator-preview">
+                            <h3>Preview</h3>
+                            <div class="preview-canvas" id="previewCanvas">
+                                <canvas id="imageCanvas" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Projects View -->
+                <div class="view" id="view-projects">
+                    <div class="view-header">
+                        <h1 class="view-title">Projects</h1>
+                        <p class="view-subtitle">Manage your NovaScript projects</p>
+                    </div>
+                    
+                    <div class="projects-toolbar">
+                        <button class="btn btn-primary" onclick="createNewProject()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            New Project
+                        </button>
+                    </div>
+                    
+                    <div class="projects-grid" id="projectsList">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Files View -->
+                <div class="view" id="view-files">
+                    <div class="view-header">
+                        <h1 class="view-title">File Manager</h1>
+                        <p class="view-subtitle">Browse and manage your files</p>
+                    </div>
+                    
+                    <div class="files-toolbar">
+                        <div class="files-nav">
+                            <button class="nav-btn" onclick="navigateUp()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                                </svg>
+                            </button>
+                            <span class="current-path" id="currentPath">/</span>
+                        </div>
+                        <div class="files-actions">
+                            <button class="btn btn-secondary" onclick="refreshFiles()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <polyline points="1 20 1 14 7 14"/>
+                                    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                                </svg>
+                            </button>
+                            <button class="btn btn-primary" onclick="uploadFile()">Upload</button>
+                        </div>
+                    </div>
+                    
+                    <div class="files-grid" id="filesList">
+                        <!-- Files will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content" id="modalContent">
+            <!-- Modal content will be inserted here -->
+        </div>
+    </div>
+    
+    <!-- Toast notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

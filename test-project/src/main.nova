@@ -1,0 +1,7 @@
+# NovaScript Hello World
+import std.io
+
+func main() {
+    io.print("Hello from NovaScript!")
+    io.print("Welcome to the future of scripting!")
+}

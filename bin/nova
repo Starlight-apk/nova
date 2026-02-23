@@ -1,0 +1,642 @@
+#!/bin/bash
+#===============================================================================
+# NovaScript - 高性能脚本编程语言
+# 版本：1.0.0
+# 支持：Termux, ARM64, Linux, macOS, Windows (Git Bash/WSL)
+#===============================================================================
+
+set -euo pipefail
+
+# 获取脚本所在目录（向上一级到项目根目录）
+# 如果是符号链接，解析真实路径
+if [[ -L "${BASH_SOURCE[0]}" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}")")" && pwd)"
+else
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+
+# 尝试多个可能的 NOVA_HOME 位置
+if [[ -d "$SCRIPT_DIR/../src" ]]; then
+    NOVA_HOME="$(cd "$SCRIPT_DIR/.." && pwd)"
+elif [[ -d "$SCRIPT_DIR/src" ]]; then
+    NOVA_HOME="$SCRIPT_DIR"
+elif [[ -d "/data/data/com.termux/files/home/novascript/src" ]]; then
+    NOVA_HOME="/data/data/com.termux/files/home/novascript"
+elif [[ -d "/opt/novascript/src" ]]; then
+    NOVA_HOME="/opt/novascript"
+else
+    NOVA_HOME="$(cd "$SCRIPT_DIR/.." && pwd)"
+fi
+
+export NOVA_HOME
+
+# 导入核心模块
+source "$NOVA_HOME/src/core/init.sh"
+source "$NOVA_HOME/src/i18n/i18n.sh"
+source "$NOVA_HOME/src/utils/args.sh"
+source "$NOVA_HOME/src/core/interpreter.sh"
+source "$NOVA_HOME/src/compiler/compiler.sh"
+source "$NOVA_HOME/src/crypto/encrypt.sh"
+source "$NOVA_HOME/tools/package-manager.sh"
+source "$NOVA_HOME/tools/debugger.sh"
+
+#===============================================================================
+# 主函数
+#===============================================================================
+main() {
+    # 初始化国际化 (默认英文，可配置)
+    init_i18n "en"
+    
+    # 在处理之前检查全局标志
+    for arg in "$@"; do
+        case "$arg" in
+            -v|--version)
+                cmd_version
+                return 0
+                ;;
+            -h|--help)
+                cmd_help
+                return 0
+                ;;
+            --lang)
+                # 下一个参数是语言
+                ;;
+        esac
+    done
+
+    # 解析命令行参数
+    parse_args "$@"
+
+    # 执行命令
+    execute_command "$NOVA_COMMAND" "${NOVA_ARGS[@]}"
+}
+
+#===============================================================================
+# 命令执行
+#===============================================================================
+execute_command() {
+    local cmd="$1"
+    shift
+    local args=("$@")
+    
+    case "$cmd" in
+        run|r)
+            cmd_run "${args[@]}"
+            ;;
+        compile|c)
+            cmd_compile "${args[@]}"
+            ;;
+        init|i)
+            cmd_init "${args[@]}"
+            ;;
+        install|add)
+            cmd_install "${args[@]}"
+            ;;
+        remove|rm)
+            cmd_remove "${args[@]}"
+            ;;
+        search|s)
+            cmd_search "${args[@]}"
+            ;;
+        list|ls)
+            cmd_list "${args[@]}"
+            ;;
+        build|b)
+            cmd_build "${args[@]}"
+            ;;
+        test|t)
+            cmd_test "${args[@]}"
+            ;;
+        debug|d)
+            cmd_debug "${args[@]}"
+            ;;
+        encrypt|enc)
+            cmd_encrypt "${args[@]}"
+            ;;
+        decrypt|dec)
+            cmd_decrypt "${args[@]}"
+            ;;
+        version|v|-v|--version)
+            cmd_version
+            ;;
+        help|h|-h|--help)
+            cmd_help
+            ;;
+        config)
+            cmd_config "${args[@]}"
+            ;;
+        clean)
+            cmd_clean "${args[@]}"
+            ;;
+        logo)
+            cmd_logo "${args[@]}"
+            ;;
+        start|server)
+            cmd_start "${args[@]}"
+            ;;
+        *)
+            if [[ -f "$cmd" ]]; then
+                # 直接运行文件
+                cmd_run "$cmd" "${args[@]}"
+            else
+                echo "$(i18n 'error.unknown_command') '$cmd'"
+                echo "$(i18n 'help.use_help')"
+                exit 1
+            fi
+            ;;
+    esac
+}
+
+#===============================================================================
+# 命令实现
+#===============================================================================
+
+# 运行 NovaScript 文件
+cmd_run() {
+    local file="$1"
+    shift
+    local run_args=("$@")
+
+    # 检查文件是否存在
+    if [[ ! -f "$file" ]]; then
+        echo ""
+        echo -e "\033[0;31m╭────────────────────────────────────────────────────╮\033[0m"
+        echo -e "\033[0;31m│\033[0m  \033[1;31mERROR:\033[0m File not found                          \033[0;31m│\033[0m"
+        echo -e "\033[0;31m╰────────────────────────────────────────────────────╯\033[0m"
+        echo ""
+        echo -e "  \033[1;33mFile:\033[0m $file"
+        echo ""
+        echo -e "  \033[1;36mSuggestions:\033[0m"
+        echo -e "    1. Check if the file path is correct"
+        echo -e "    2. Use \033[1;32mnova run ./path/to/file.nova\033[0m"
+        echo -e "    3. List available files: \033[1;32mls *.nova\033[0m"
+        echo ""
+        echo -e "  \033[1;36mAvailable examples:\033[0m"
+        if [[ -d "$NOVA_HOME/examples" ]]; then
+            for f in "$NOVA_HOME/examples"/*.nova; do
+                [[ -f "$f" ]] && echo -e "    - \033[1;32m$(basename "$f")\033[0m"
+            done
+        fi
+        echo ""
+        exit 1
+    fi
+
+    # 运行解释器
+    nova_interpret "$file" "${run_args[@]}"
+}
+
+# 编译 NovaScript 文件
+cmd_compile() {
+    local file="$1"
+    shift
+    local output=""
+    local optimize=false
+    
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -o|--output)
+                output="$2"
+                shift 2
+                ;;
+            --optimize|-O)
+                optimize=true
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+    
+    if [[ -z "$output" ]]; then
+        output="${file%.nova}.nbc"  # Nova Byte Code
+    fi
+    
+    nova_compile "$file" "$output" "$optimize"
+}
+
+# 初始化新项目
+cmd_init() {
+    local name="${1:-my-nova-project}"
+    local template="${2:-default}"
+    
+    echo "$(i18n 'init.creating') '$name'..."
+    
+    mkdir -p "$name"/{src,lib,test,packages,docs}
+    
+    cat > "$name/nova.json" << EOF
+{
+    "name": "$name",
+    "version": "1.0.0",
+    "description": "A NovaScript project",
+    "main": "src/main.nova",
+    "type": "application",
+    "dependencies": {},
+    "devDependencies": {},
+    "scripts": {
+        "start": "nova run src/main.nova",
+        "test": "nova test",
+        "build": "nova build"
+    },
+    "author": "",
+    "license": "MIT"
+}
+EOF
+    
+    cat > "$name/src/main.nova" << 'EOF'
+# NovaScript Hello World
+import std.io
+
+func main() {
+    io.print("Hello from NovaScript!")
+    io.print("Welcome to the future of scripting!")
+}
+EOF
+    
+    cat > "$name/.novaignore" << 'EOF'
+node_modules/
+*.nbc
+*.enc.nova
+dist/
+build/
+.env
+EOF
+    
+    echo "$(i18n 'init.created') '$name'"
+    echo "$(i18n 'init.next_steps')"
+    echo "  cd $name"
+    echo "  nova run src/main.nova"
+}
+
+# 安装包
+cmd_install() {
+    local packages=("$@")
+    
+    # 导入模块 API
+    source "$NOVA_HOME/lib/api/module.sh" 2>/dev/null
+    source "$NOVA_HOME/lib/api/github.sh" 2>/dev/null
+    
+    if [[ ${#packages[@]} -eq 0 ]]; then
+        # 安装项目依赖
+        echo ""
+        echo -e "\033[0;36m╭────────────────────────────────────────────────────╮\033[0m"
+        echo -e "\033[0;36m│\033[0m  \033[1;36mINSTALL:\033[0m Installing project dependencies       \033[0;36m│\033[0m"
+        echo -e "\033[0;36m╰────────────────────────────────────────────────────╯\033[0m"
+        echo ""
+        
+        # 检查 manifest
+        local manifest="nova.json"
+        [[ ! -f "$manifest" ]] && manifest="package.json"
+        
+        if [[ ! -f "$manifest" ]]; then
+            echo -e "\033[1;33mWarning:\033[0m No nova.json or package.json found"
+            echo "Creating new nova.json..."
+            api_project_create "$(basename "$PWD")"
+            return 0
+        fi
+        
+        api_dependency_install "$manifest"
+    else
+        # 安装指定包
+        echo ""
+        echo -e "\033[0;36m╭────────────────────────────────────────────────────╮\033[0m"
+        echo -e "\033[0;36m│\033[0m  \033[1;36mINSTALL:\033[0m Installing packages                     \033[0;36m│\033[0m"
+        echo -e "\033[0;36m╰────────────────────────────────────────────────────╯\033[0m"
+        echo ""
+        
+        for pkg in "${packages[@]}"; do
+            # 解析包名和版本
+            local pkg_name="${pkg%@*}"
+            local pkg_version="${pkg#*@}"
+            [[ "$pkg_version" == "$pkg" ]] && pkg_version="latest"
+            
+            echo -e "\033[1;32m➜\033[0m Installing \033[1;35m$pkg_name\033[0m@\033[1;35m$pkg_version\033[0m"
+            
+            # 尝试从 GitHub 下载
+            if [[ "$pkg_name" == */* ]]; then
+                # GitHub 格式：owner/repo@version
+                local owner="${pkg_name%%/*}"
+                local repo="${pkg_name#*/}"
+                local pkg="${repo%@*}"
+                github_download_package "$owner" "$repo" "$pkg" "$pkg_version"
+            else
+                # 本地或默认源
+                api_package_install "$pkg_name" "$pkg_version"
+            fi
+            echo ""
+        done
+        
+        echo -e "\033[1;32m✓\033[0m Installation completed!"
+        echo ""
+    fi
+}
+
+# 移除包
+cmd_remove() {
+    local packages=("$@")
+    
+    # 导入模块 API
+    source "$NOVA_HOME/lib/api/module.sh" 2>/dev/null
+    
+    if [[ ${#packages[@]} -eq 0 ]]; then
+        echo ""
+        echo -e "\033[1;33mUsage:\033[0m nova remove <package-name>"
+        echo ""
+        api_package_list
+        return 1
+    fi
+    
+    echo ""
+    echo -e "\033[0;33m╭────────────────────────────────────────────────────╮\033[0m"
+    echo -e "\033[0;33m│\033[0m  \033[1;33mREMOVE:\033[0m  Removing packages                       \033[0;33m│\033[0m"
+    echo -e "\033[0;33m╰────────────────────────────────────────────────────╯\033[0m"
+    echo ""
+    
+    for pkg in "${packages[@]}"; do
+        echo -e "\033[1;31m➜\033[0m Removing \033[1;35m$pkg\033[0m"
+        api_package_remove "$pkg"
+        echo ""
+    done
+    
+    echo -e "\033[1;32m✓\033[0m Packages removed!"
+    echo ""
+}
+
+# 搜索包
+cmd_search() {
+    local query="$1"
+    
+    # 导入模块 API
+    source "$NOVA_HOME/lib/api/module.sh" 2>/dev/null
+    source "$NOVA_HOME/lib/api/github.sh" 2>/dev/null
+    
+    if [[ -z "$query" ]]; then
+        echo ""
+        echo -e "\033[1;33mUsage:\033[0m nova search <query>"
+        echo ""
+        return 1
+    fi
+    
+    echo ""
+    echo -e "\033[0;35m╭────────────────────────────────────────────────────╮\033[0m"
+    echo -e "\033[0;35m│\033[0m  \033[1;35mSEARCH:\033[0m  Searching packages                      \033[0;35m│\033[0m"
+    echo -e "\033[0;35m╰────────────────────────────────────────────────────╯\033[0m"
+    echo ""
+    
+    # 本地搜索
+    echo -e "\033[1;36mLocal packages:\033[0m"
+    api_package_search "$query"
+    
+    # GitHub 搜索
+    echo ""
+    github_search_packages "$query"
+    
+    echo ""
+}
+
+# 列出已安装包
+cmd_list() {
+    local pattern="${1:-}"
+    
+    # 导入模块 API
+    source "$NOVA_HOME/lib/api/module.sh" 2>/dev/null
+    
+    echo ""
+    echo -e "\033[0;32m╭────────────────────────────────────────────────────╮\033[0m"
+    echo -e "\033[0;32m│\033[0m  \033[1;32mLIST:\033[0m   Installed packages                     \033[0;32m│\033[0m"
+    echo -e "\033[0;32m╰────────────────────────────────────────────────────╯\033[0m"
+    echo ""
+    
+    api_package_list
+    
+    if [[ -n "$pattern" ]]; then
+        echo ""
+        echo "Filtered by: $pattern"
+    fi
+    echo ""
+}
+
+# 构建项目
+cmd_build() {
+    local output="${1:-dist}"
+    local optimize="${2:-true}"
+    
+    echo "$(i18n 'build.starting')..."
+    nova_build "$output" "$optimize"
+    echo "$(i18n 'build.completed')"
+}
+
+# 运行测试
+cmd_test() {
+    local pattern="${1:-test/**/*.nova.test}"
+    local verbose=false
+    
+    if [[ "$2" == "-v" ]] || [[ "$2" == "--verbose" ]]; then
+        verbose=true
+    fi
+    
+    nova_test "$pattern" "$verbose"
+}
+
+# 调试模式
+cmd_debug() {
+    local file="$1"
+    shift
+    nova_debug "$file" "$@"
+}
+
+# 加密文件
+cmd_encrypt() {
+    local file="$1"
+    local output="${2:-${file}.enc}"
+    local level="${3:-3}"  # 加密级别 1-5
+    
+    nova_encrypt "$file" "$output" "$level"
+    echo "$(i18n 'encrypt.completed'): $output"
+}
+
+# 解密文件
+cmd_decrypt() {
+    local file="$1"
+    local output="${2:-${file%.enc}}"
+    local key="${3:-}"
+    
+    nova_decrypt "$file" "$output" "$key"
+    echo "$(i18n 'decrypt.completed'): $output"
+}
+
+# 版本信息
+cmd_version() {
+    echo "NovaScript v1.0.0"
+    echo "Build: 2026.02.23"
+    echo "Platform: $(uname -s)/$(uname -m)"
+    echo "Bash: $BASH_VERSION"
+    
+    # 检测 Termux
+    if [[ -n "${TERMUX_VERSION:-}" ]] || [[ -d "/data/data/com.termux" ]]; then
+        echo "Environment: Termux"
+    fi
+    
+    # 检测 ARM64
+    local arch=$(uname -m)
+    if [[ "$arch" == "aarch64" ]] || [[ "$arch" == "arm64" ]]; then
+        echo "Architecture: ARM64 (optimized)"
+    fi
+}
+
+# 帮助信息
+cmd_help() {
+    cat << EOF
+$(i18n 'help.header')
+
+$(i18n 'help.usage')
+  nova <command> [options] [arguments]
+
+$(i18n 'help.commands')
+  run, r <file>           $(i18n 'help.cmd.run')
+  compile, c <file>       $(i18n 'help.cmd.compile')
+  init, i <name>          $(i18n 'help.cmd.init')
+  install, add [pkg...]   $(i18n 'help.cmd.install')
+  remove, rm <pkg...>     $(i18n 'help.cmd.remove')
+  search, s <query>       $(i18n 'help.cmd.search')
+  list, ls [pattern]      $(i18n 'help.cmd.list')
+  build, b                $(i18n 'help.cmd.build')
+  test, t                 $(i18n 'help.cmd.test')
+  debug, d <file>         $(i18n 'help.cmd.debug')
+  encrypt, enc <file>     $(i18n 'help.cmd.encrypt')
+  decrypt, dec <file>     $(i18n 'help.cmd.decrypt')
+  config                  $(i18n 'help.cmd.config')
+  clean                   $(i18n 'help.cmd.clean')
+  logo                    $(i18n 'help.cmd.logo')
+  version, v              $(i18n 'help.cmd.version')
+  help, h                 $(i18n 'help.cmd.help')
+  start, server           $(i18n 'help.cmd.start')
+
+$(i18n 'help.options')
+  -v, --version           $(i18n 'help.opt.version')
+  -h, --help              $(i18n 'help.opt.help')
+  -l, --lang <lang>       $(i18n 'help.opt.lang')
+  -d, --debug             $(i18n 'help.opt.debug')
+  -O, --optimize          $(i18n 'help.opt.optimize')
+  -q, --quiet             $(i18n 'help.opt.quiet')
+  -V, --verbose           $(i18n 'help.opt.verbose')
+
+$(i18n 'help.examples')
+  nova run script.nova
+  nova init my-project
+  nova install package-name
+  nova build --optimize
+  nova encrypt secret.nova -l 5
+  nova --lang zh-CN run script.nova
+
+$(i18n 'help.links')
+  Docs: https://novascript.dev/docs
+  Packages: https://novascript.dev/packages
+  GitHub: https://github.com/novascript/nova
+
+EOF
+}
+
+# 配置命令
+cmd_config() {
+    local key="${1:-}"
+    local value="${2:-}"
+    
+    local config_file="$HOME/.nova/config.json"
+    mkdir -p "$(dirname "$config_file")"
+    
+    if [[ -z "$key" ]]; then
+        # 显示所有配置
+        if [[ -f "$config_file" ]]; then
+            cat "$config_file"
+        else
+            echo "{}"
+        fi
+    elif [[ -z "$value" ]]; then
+        # 获取配置值
+        if [[ -f "$config_file" ]]; then
+            grep "\"$key\"" "$config_file" || echo "null"
+        else
+            echo "null"
+        fi
+    else
+        # 设置配置值
+        if [[ ! -f "$config_file" ]]; then
+            echo "{}" > "$config_file"
+        fi
+        # 简单的 JSON 更新（实际应该用 jq）
+        echo "Config '$key' = '$value'"
+    fi
+}
+
+# 清理命令
+cmd_clean() {
+    local target="${1:-.}"
+
+    echo "$(i18n 'clean.removing')..."
+
+    find "$target" -name "*.nbc" -delete 2>/dev/null || true
+    find "$target" -name "*.enc.nova" -delete 2>/dev/null || true
+    find "$target" -type d -name "dist" -exec rm -rf {} + 2>/dev/null || true
+    find "$target" -type d -name "build" -exec rm -rf {} + 2>/dev/null || true
+
+    echo "$(i18n 'clean.completed')"
+}
+
+# 显示 Logo
+cmd_logo() {
+    local mode="${1:-neofetch}"
+    bash "$NOVA_HOME/tools/logo.sh" "$mode"
+}
+
+# 启动 WebUI 服务器
+cmd_start() {
+    local host="${1:-127.0.0.1}"
+    local port="${2:-8080}"
+    
+    # 解析参数
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--host)
+                host="$2"
+                shift 2
+                ;;
+            -p|--port)
+                port="$2"
+                shift 2
+                ;;
+            -o|--open)
+                OPEN_BROWSER=true
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+    
+    echo "========================================"
+    echo "  NovaScript WebUI Server"
+    echo "========================================"
+    echo ""
+    echo "Starting server..."
+    echo "  Host: $host"
+    echo "  Port: $port"
+    echo "  Root: $NOVA_HOME/webui"
+    echo ""
+    echo "Open in browser: http://$host:$port"
+    echo ""
+    echo "Press Ctrl+C to stop"
+    echo "========================================"
+    echo ""
+    
+    # 启动服务器
+    export WEBUI_HOST="$host"
+    export WEBUI_PORT="$port"
+    export NOVA_HOME="$NOVA_HOME"
+    
+    bash "$NOVA_HOME/webui/server.sh" auto
+}
+
+# 启动
+main "$@"

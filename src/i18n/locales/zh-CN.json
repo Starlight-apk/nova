@@ -1,0 +1,87 @@
+{
+    "app.name": "NovaScript",
+    "app.description": "高性能脚本编程语言",
+    
+    "error.unknown_command": "未知命令:",
+    "error.file_not_found": "文件不存在:",
+    "error.module_not_found": "模块不存在:",
+    "error.syntax_error": "语法错误:",
+    "error.runtime_error": "运行时错误:",
+    "error.permission_denied": "权限被拒绝:",
+    "error.network_error": "网络错误:",
+    "error.package_not_found": "包不存在:",
+    
+    "help.header": "NovaScript - 高性能脚本编程语言",
+    "help.usage": "用法:",
+    "help.commands": "命令:",
+    "help.options": "选项:",
+    "help.examples": "示例:",
+    "help.links": "链接:",
+    "help.use_help": "使用 'nova help' 查看更多信息",
+    
+    "help.cmd.run": "运行 NovaScript 文件",
+    "help.cmd.compile": "编译为字节码",
+    "help.cmd.init": "初始化新项目",
+    "help.cmd.install": "安装包",
+    "help.cmd.remove": "移除包",
+    "help.cmd.search": "搜索包",
+    "help.cmd.list": "列出已安装包",
+    "help.cmd.build": "构建项目",
+    "help.cmd.test": "运行测试",
+    "help.cmd.debug": "调试模式",
+    "help.cmd.encrypt": "加密文件",
+    "help.cmd.decrypt": "解密文件",
+    "help.cmd.config": "配置",
+    "help.cmd.clean": "清理构建产物",
+    "help.cmd.logo": "显示彩色 Logo",
+    "help.cmd.version": "显示版本",
+    "help.cmd.help": "显示此帮助",
+    "help.cmd.start": "启动 WebUI 服务器",
+    
+    "help.opt.version": "显示版本信息",
+    "help.opt.help": "显示此帮助消息",
+    "help.opt.lang": "设置语言 (默认：en)",
+    "help.opt.debug": "启用调试模式",
+    "help.opt.optimize": "启用优化",
+    "help.opt.quiet": "安静模式",
+    "help.opt.verbose": "详细输出",
+    
+    "init.creating": "正在创建项目:",
+    "init.created": "项目已创建:",
+    "init.next_steps": "下一步:",
+    
+    "build.starting": "正在构建",
+    "build.completed": "构建完成",
+    
+    "encrypt.completed": "加密完成",
+    "decrypt.completed": "解密完成",
+    
+    "clean.removing": "正在清理构建产物",
+    "clean.completed": "清理完成",
+    
+    "pkg.installing": "正在安装包:",
+    "pkg.installed": "包已安装:",
+    "pkg.removing": "正在移除包:",
+    "pkg.removed": "包已移除:",
+    "pkg.searching": "正在搜索包:",
+    "pkg.not_found": "包不存在:",
+    "pkg.updating": "正在更新包:",
+    "pkg.updated": "包已更新",
+    
+    "test.running": "正在运行测试:",
+    "test.passed": "测试通过:",
+    "test.failed": "测试失败:",
+    "test.summary": "测试摘要:",
+    
+    "debug.started": "调试会话已开始",
+    "debug.stopped": "调试会话已停止",
+    "debug.breakpoint": "断点命中:",
+    
+    "compile.started": "正在编译:",
+    "compile.completed": "编译完成:",
+    "compile.error": "编译错误:",
+    
+    "run.started": "正在运行:",
+    "run.completed": "执行完成",
+    "run.error": "执行错误:"
+}

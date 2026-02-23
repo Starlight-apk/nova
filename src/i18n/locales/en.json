@@ -1,0 +1,87 @@
+{
+    "app.name": "NovaScript",
+    "app.description": "High-performance scripting language",
+    
+    "error.unknown_command": "Unknown command:",
+    "error.file_not_found": "File not found:",
+    "error.module_not_found": "Module not found:",
+    "error.syntax_error": "Syntax error:",
+    "error.runtime_error": "Runtime error:",
+    "error.permission_denied": "Permission denied:",
+    "error.network_error": "Network error:",
+    "error.package_not_found": "Package not found:",
+    
+    "help.header": "NovaScript - High-performance Scripting Language",
+    "help.usage": "Usage:",
+    "help.commands": "Commands:",
+    "help.options": "Options:",
+    "help.examples": "Examples:",
+    "help.links": "Links:",
+    "help.use_help": "Use 'nova help' for more information",
+    
+    "help.cmd.run": "Run a NovaScript file",
+    "help.cmd.compile": "Compile to bytecode",
+    "help.cmd.init": "Initialize new project",
+    "help.cmd.install": "Install packages",
+    "help.cmd.remove": "Remove packages",
+    "help.cmd.search": "Search packages",
+    "help.cmd.list": "List installed packages",
+    "help.cmd.build": "Build project",
+    "help.cmd.test": "Run tests",
+    "help.cmd.debug": "Debug mode",
+    "help.cmd.encrypt": "Encrypt file",
+    "help.cmd.decrypt": "Decrypt file",
+    "help.cmd.config": "Configuration",
+    "help.cmd.clean": "Clean build artifacts",
+    "help.cmd.logo": "Show colorful Logo",
+    "help.cmd.version": "Show version",
+    "help.cmd.help": "Show this help",
+    "help.cmd.start": "Start WebUI server",
+    
+    "help.opt.version": "Show version information",
+    "help.opt.help": "Show this help message",
+    "help.opt.lang": "Set language (default: en)",
+    "help.opt.debug": "Enable debug mode",
+    "help.opt.optimize": "Enable optimization",
+    "help.opt.quiet": "Quiet mode",
+    "help.opt.verbose": "Verbose output",
+    
+    "init.creating": "Creating project:",
+    "init.created": "Project created:",
+    "init.next_steps": "Next steps:",
+    
+    "build.starting": "Building",
+    "build.completed": "Build completed",
+    
+    "encrypt.completed": "Encryption completed",
+    "decrypt.completed": "Decryption completed",
+    
+    "clean.removing": "Removing build artifacts",
+    "clean.completed": "Clean completed",
+    
+    "pkg.installing": "Installing package:",
+    "pkg.installed": "Package installed:",
+    "pkg.removing": "Removing package:",
+    "pkg.removed": "Package removed:",
+    "pkg.searching": "Searching packages:",
+    "pkg.not_found": "Package not found:",
+    "pkg.updating": "Updating packages:",
+    "pkg.updated": "Packages updated",
+    
+    "test.running": "Running tests:",
+    "test.passed": "Tests passed:",
+    "test.failed": "Tests failed:",
+    "test.summary": "Test summary:",
+    
+    "debug.started": "Debug session started",
+    "debug.stopped": "Debug session stopped",
+    "debug.breakpoint": "Breakpoint hit:",
+    
+    "compile.started": "Compiling:",
+    "compile.completed": "Compilation completed:",
+    "compile.error": "Compilation error:",
+    
+    "run.started": "Running:",
+    "run.completed": "Execution completed",
+    "run.error": "Execution error:"
+}

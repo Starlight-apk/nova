@@ -1,0 +1,71 @@
+#!/bin/bash
+#===============================================================================
+# NovaScript 示例 - 加密演示
+#===============================================================================
+
+import std.io
+import std.os
+
+# 导入加密模块
+source "$NOVA_HOME/src/crypto/encrypt.sh"
+
+func main() {
+    io.print("========================================")
+    io.print("  NovaScript Encryption Demo")
+    io.print("========================================")
+    io.print("")
+    
+    local secret_message = "Hello, this is a secret message!"
+    io.print("Original message: $secret_message")
+    io.print("")
+    
+    # 不同加密级别
+    for level in 1 2 3 4 5 {
+        io.print("Encryption Level $level:")
+        
+        # 加密
+        local encrypted=$(nova_encrypt_string "$secret_message" "$level")
+        io.print("  Encrypted: ${encrypted:0:50}...")
+        
+        # 解密
+        local decrypted=$(nova_decrypt_string "$encrypted")
+        io.print("  Decrypted: $decrypted")
+        
+        # 验证
+        if [[ "$decrypted" == "$secret_message" ]]; then
+            io.print("  Status: ✓ Verified")
+        else
+            io.print("  Status: ✗ Failed")
+        fi
+        
+        io.print("")
+    }
+    
+    # 自定义密钥
+    io.print("Custom Key Encryption:")
+    local custom_key = "my_secret_key_2026"
+    local encrypted_custom=$(nova_encrypt_string "$secret_message" 3 "$custom_key")
+    io.print("  Encrypted: ${encrypted_custom:0:50}...")
+    
+    local decrypted_custom=$(nova_decrypt_string "$encrypted_custom" "$custom_key")
+    io.print("  Decrypted: $decrypted_custom")
+    io.print("")
+    
+    # 密钥生成
+    io.print("Generated Keys:")
+    for i in 1 2 3 {
+        local new_key=$(nova_generate_key 16)
+        io.print("  Key $i: $new_key")
+    }
+    io.print("")
+    
+    # 哈希示例
+    io.print("Hash Functions:")
+    io.print("  MD5:    $(nova_hash "Hello NovaScript" md5)")
+    io.print("  SHA256: $(nova_hash "Hello NovaScript" sha256)")
+    io.print("")
+    
+    io.print("========================================")
+    io.print("  Encryption demo completed!")
+    io.print("========================================")
+}

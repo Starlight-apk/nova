@@ -1,0 +1,68 @@
+#!/bin/bash
+#===============================================================================
+# NovaScript 示例 - Hello World
+#===============================================================================
+
+# 导入模块
+source "$NOVA_HOME/lib/std/io.nova"
+source "$NOVA_HOME/lib/std/string.nova"
+source "$NOVA_HOME/lib/std/os.nova"
+
+echo "========================================"
+echo "  Welcome to NovaScript!"
+echo "========================================"
+echo ""
+
+# 显示系统信息
+echo "System Information:"
+echo "  OS: $(os_type)"
+echo "  Architecture: $(os_arch)"
+echo "  Termux: $(os_is_termux)"
+echo "  ARM64: $(os_is_arm64)"
+echo ""
+
+# 字符串操作示例
+greeting="Hello, NovaScript!"
+echo "String Operations:"
+echo "  Original: $greeting"
+echo "  Length: $(string_len "$greeting")"
+echo "  Upper: $(string_upper "$greeting")"
+echo "  Lower: $(string_lower "$greeting")"
+echo ""
+
+# 数学运算示例
+source "$NOVA_HOME/lib/std/math.nova"
+echo "Math Operations:"
+echo "  10 + 5 = $(math_add 10 5)"
+echo "  10 * 5 = $(math_mul 10 5)"
+echo "  17 % 5 = $(math_mod 17 5)"
+echo "  sqrt(16) = $(math_sqrt 16)"
+echo ""
+
+# 循环示例
+echo "Loop Example:"
+for ((i=1; i<=5; i++)); do
+    echo "  Count: $i"
+done
+echo ""
+
+# 条件示例
+echo "Condition Example:"
+value=42
+if [[ $value -gt 40 ]]; then
+    echo "  Value is greater than 40"
+else
+    echo "  Value is not greater than 40"
+fi
+echo ""
+
+# JSON 示例
+source "$NOVA_HOME/lib/std/json.nova"
+person=$(json_object "name=Alice" "age=30" "city=New York")
+echo "JSON Example:"
+echo "  $person"
+echo ""
+
+echo "========================================"
+echo "  Thanks for trying NovaScript!"
+echo "========================================"
