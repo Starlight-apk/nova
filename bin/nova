@@ -34,10 +34,12 @@ export NOVA_HOME
 source "$NOVA_HOME/src/core/init.sh"
 source "$NOVA_HOME/src/i18n/i18n.sh"
 source "$NOVA_HOME/src/utils/args.sh"
+source "$NOVA_HOME/src/core/runtime.sh"      # 新增：运行时环境
 source "$NOVA_HOME/src/core/interpreter.sh"
 source "$NOVA_HOME/src/compiler/compiler.sh"
 source "$NOVA_HOME/src/crypto/encrypt.sh"
 source "$NOVA_HOME/tools/package-manager.sh"
+source "$NOVA_HOME/tools/nova-pkg.sh"        # 新增：企业级包管理器
 source "$NOVA_HOME/tools/debugger.sh"
 
 #===============================================================================
@@ -133,6 +135,9 @@ execute_command() {
             ;;
         start|server)
             cmd_start "${args[@]}"
+            ;;
+        pkg)
+            cmd_pkg "${args[@]}"
             ;;
         *)
             if [[ -f "$cmd" ]]; then
@@ -508,6 +513,7 @@ $(i18n 'help.commands')
   config                  $(i18n 'help.cmd.config')
   clean                   $(i18n 'help.cmd.clean')
   logo                    $(i18n 'help.cmd.logo')
+  pkg                     $(i18n 'help.cmd.pkg')
   version, v              $(i18n 'help.cmd.version')
   help, h                 $(i18n 'help.cmd.help')
   start, server           $(i18n 'help.cmd.start')
